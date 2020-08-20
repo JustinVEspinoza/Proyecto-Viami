@@ -9,12 +9,12 @@
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
         <link href="bootstrap-4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
-        <link href="css/login.css" rel="stylesheet"/>
+        
         <link rel="stylesheet" href="build/css/intlTelInput.css">
         <link rel="stylesheet" href="build/css/demo.css">
         
         <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
-
+<link href="css/login.css" rel="stylesheet"/>
     </head>
     <body>
         <div class="container">
@@ -35,7 +35,7 @@
 </div>
 <div id="recaptcha-container"></div>
       <script src="Jquery/jquery-3.5.1.min.js"></script>
-        <script src="build/js/intlTelInput.js"></script>
+     
       
       <script src="bootstrap-4.5.2/js/bootstrap.min.js"></script>
       <script src="https://www.gstatic.com/firebasejs/6.2.0/firebase-app.js"></script>
@@ -44,6 +44,9 @@
   <script src="https://www.gstatic.com/firebasejs/6.2.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/6.2.0/firebase-firestore.js"></script>
   <script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+  <script src="js/DropZone/dropzone.js"></script>
+     <script src="build/js/intlTelInput.js"></script>
    <script src="js/inicio_sesion.js"></script>
     </body>
 </html>

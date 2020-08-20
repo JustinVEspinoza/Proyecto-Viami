@@ -1,28 +1,17 @@
+
+/*****************************Configuración de los campos de texto telefonico*******************************************/
 var input = document.querySelector("#phone");
+var input2 = document.querySelector("#phone2");
     window.intlTelInput(input, {
-      // allowDropdown: false,
-      // autoHideDialCode: false,
-      // autoPlaceholder: "off",
-      // dropdownContainer: document.body,
-      // excludeCountries: ["us"],
-      // formatOnDisplay: false,
-      // geoIpLookup: function(callback) {
-      //   $.get("http://ipinfo.io", function() {}, "jsonp").always(function(resp) {
-      //     var countryCode = (resp && resp.country) ? resp.country : "";
-      //     callback(countryCode);
-      //   });
-      // },
-      // hiddenInput: "full_number",
-      // initialCountry: "auto",
-      // localizedCountries: { 'de': 'Deutschland' },
-      // nationalMode: false,
-      // onlyCountries: ['us', 'gb', 'ch', 'ca', 'do'],
-      // placeholderNumberType: "MOBILE",
-      // preferredCountries: ['cn', 'jp'],
-      // separateDialCode: true,
       utilsScript: "build/js/utils.js",
     });
-
+window.intlTelInput(input2, {
+      utilsScript: "build/js/utils.js",
+    });
+var iti = window.intlTelInputGlobals.getInstance(input);
+var iti2 = window.intlTelInputGlobals.getInstance(input2);
+/*****************************Configuración de Firebase y captcha************************************************/
+/*Credenciales de la cuenta del proyecto en firebase*/
 const firebaseConfig = {
   apiKey: "AIzaSyC45-7652_UjVxxYlIXi98tzZcG11OR_90",
   authDomain: "viami-c9b37.firebaseapp.com",
@@ -34,40 +23,63 @@ const firebaseConfig = {
   measurementId: "G-88TKLWT0T9"
 };
 
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     firebase.auth().languageCode = 'it';
-   
+  var recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container',{
+  size : 'invisible'
+});
 
-    
-
-    window.onload=inicializar;
-
-    function inicializar(){
-      //firebase.auth().settings.appVerificationDisabledForTesting = true;
-     window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('SignUp', {
-        'size': 'invisible',
-        'callback': function(response) {
-
-          // reCAPTCHA solved, allow signInWithPhoneNumber.
-          onSignInSubmit();
-        }
-      });
-      
-    }
+recaptchaVerifier.render().then(function(widgetId) {
+  window.recaptchaWidgetId = widgetId;
+});
+/*****************************************************************************/
     function onSignInSubmit(){
-      alert();
-      var phoneNumber = "+50664486068";
-     // var testVerificationCode = "123456";
-      var appVerifier = window.recaptchaVerifier;
-      firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
-          .then(function (confirmationResult) {
-            // SMS sent. Prompt user to type the code from the message, then sign the
-            // user in with confirmationResult.confirm(code).
-            window.confirmationResult = confirmationResult;
-          }).catch(function (error) {
-            // Error; SMS not sent
-            // ...
-          });
+      
+      let phone = iti.getNumber();
+      firebase.auth().signInWithPhoneNumber(phone, recaptchaVerifier)
+        .then(function (confirmationResult) {
+          window.confirmationResult = confirmationResult;
+          console.log('enviado?',confirmationResult);
+        }).catch(function (error) {
+          console.log('error',error)
+          grecaptcha.reset(window.recaptchaWidgetId);
+          recaptchaVerifier.render().then(function(widgetId) {
+          grecaptcha.reset(widgetId);
+        });
+      }
+    );
+       validarClave();
+  
     }
-// Turn off phone auth app verification.
+
+    function validarClave(){
+       Swal.fire({
+        title: 'Terminar Registro',
+        html: '<input type="text" id="clave" class="swal2-input" placeholder="Ingrese la clave"></input>',
+        confirmButtonText: 'Validar Código',
+        preConfirm: () => {
+            let clave = Swal.getPopup().querySelector('#clave').value
+            
+            if (clave === '') {
+                Swal.showValidationMessage(`No ha ingresado la clave`);
+            }
+            return {clave: clave}
+        }
+    }).then((result) => {
+         var clave=`${result.value.clave}`;
+        console.log("clave:"+clave);
+          window.confirmationResult.confirm(clave)
+            .then(function (result) {
+              var user = result.user;
+              console.log(user);
+              if(user!="" && user!=null){
+                  
+              }
+              
+            })
+            .catch(function (error) {
+                console.log(error)
+            });      
+                 
+    });
+    }
